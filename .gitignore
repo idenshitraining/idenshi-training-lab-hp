@@ -1,0 +1,25 @@
+# システム・Windowsファイルを除外
+NTUSER.DAT*
+ntuser.dat*
+ntuser.ini
+AppData/
+Application Data/
+Contacts/
+CrossDevice/
+Desktop/
+Documents/
+Downloads/
+Favorites/
+Links/
+Music/
+OneDrive/
+Pictures/
+Saved Games/
+Searches/
+Videos/
+Apple/
+.gitconfig
+.lesshst
+.claude.json
+.claude.json.backup
+CHIZUKO*/

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:idenshi-training.com)",
+      "WebFetch(domain:idenshi.base.shop)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\Owner\\\\images\\\\dna-kit.jpg.png\"      \"dna-kit.jpg\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\Owner\\\\images\\\\meal-support.jpg.png\" \"meal-support.jpg\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\Owner\\\\images\\\\exercise.jpg.png\"     \"exercise.jpg\")",
+      "WebFetch(domain:www.itoman-w.com)"
+    ]
+  }
+}

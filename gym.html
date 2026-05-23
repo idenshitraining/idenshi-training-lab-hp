@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>遺伝子トレーニング研究所</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== リセット・基本設定 ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0a1f44;
+      --navy-light: #163165;
+      --blue: #1a73e8;
+      --white: #ffffff;
+      --gray: #f5f7fa;
+      --gray2: #e8ecf2;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 16px;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.7;
+    }
+
+    /* ===== 共通ユーティリティ ===== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 900;
+      color: var(--navy);
+      text-align: center;
+      margin-bottom: .5rem;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 3rem;
+      font-size: .95rem;
+    }
+
+    section { padding: 5rem 0; }
+
+    /* フェードインアニメーション */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ===== ヘッダー ===== */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--navy);
+      z-index: 1000;
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .logo {
+      color: var(--white);
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    nav { display: flex; align-items: center; gap: 1.8rem; }
+
+    nav a {
+      color: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    nav a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white) !important;
+      padding: .45rem 1.2rem;
+      border-radius: .5rem;
+      font-weight: 700 !important;
+      font-size: .88rem !important;
+      transition: background .2s, transform .2s !important;
+    }
+    .nav-cta:hover { background: #1558b0; transform: translateY(-1px); }
+
+    /* ハンバーガー（モバイル） */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: all .3s;
+    }
+
+    /* ===== ヒーロー ===== */
+    #hero {
+      margin-top: 64px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #1a4a9e 100%);
+      color: var(--white);
+      padding: 6rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 30% 50%, rgba(26,115,232,.2) 0%, transparent 70%);
+    }
+
+    /* 2カラムレイアウト */
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .hero-text { flex: 1; }
+
+    /* ヒーロービジュアルエリア */
+    .hero-visual {
+      flex: 0 0 380px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero-photo {
+      width: 100%;
+      max-width: 360px;
+      height: 420px;
+      object-fit: cover;
+      border-radius: 1.6rem;
+      box-shadow: 0 20px 56px rgba(0,0,0,.4), 0 0 0 3px rgba(255,255,255,.12);
+      animation: hero-float 5s ease-in-out infinite;
+    }
+
+    @keyframes hero-float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    /* ===== サービスフロー ===== */
+    #flow { background: var(--navy); color: var(--white); }
+    #flow .section-title { color: var(--white); }
+    #flow .section-sub   { color: rgba(255,255,255,.6); }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .flow-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 1.4rem;
+      overflow: hidden;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .flow-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.3);
+    }
+
+    .flow-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .flow-body { padding: 1.4rem 1.6rem 1.8rem; }
+
+    .flow-step {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--blue);
+      color: var(--white);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: .2rem .7rem;
+      border-radius: 999px;
+      margin-bottom: .8rem;
+    }
+
+    .flow-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      color: var(--white);
+    }
+
+    .flow-desc {
+      font-size: .88rem;
+      color: rgba(255,255,255,.65);
+      line-height: 1.75;
+    }
+
+    @media (max-width: 768px) {
+      .flow-grid { grid-template-columns: 1fr; }
+    }
+
+    .hero-label {
+      display: inline-block;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.9);
+      padding: .3rem 1rem;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.9rem, 4vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, #7dd3fc, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* サブコピー：タイトル直下の短いインパクトライン */
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: .04em;
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .hero-desc {
+      font-size: .98rem;
+      color: rgba(255,255,255,.7);
+      max-width: 400px;
+      margin: 0 0 2.2rem;
+      line-height: 1.85;
+    }
+
+    /* ボタンは1つ＋スクロール誘導矢印 */
+    .hero-btns { display: flex; flex-direction: column; gap: 1.2rem; align-items: flex-start; }
+
+    /* スクロールダウン矢印 */
+    .hero-scroll {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+      color: rgba(255,255,255,.45);
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-top: .4rem;
+    }
+    .hero-scroll::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.4), transparent);
+      animation: scroll-line 1.8s ease-in-out infinite;
+    }
+    @keyframes scroll-line {
+      0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      padding: .85rem 2.2rem;
+      border-radius: .75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(26,115,232,.45);
+    }
+    .btn-primary:hover {
+      background: #1558b0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(26,115,232,.55);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,.4);
+      padding: .85rem 2.2rem;
+      border-radius: .75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,.08);
+      transform: translateY(-2px);
+    }
+
+    /* ===== 特徴 ===== */
+    #features { background: var(--gray); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border-radius: 1.2rem;
+      padding: 2rem 1.8rem;
+      border: 1px solid var(--gray2);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(10,31,68,.1); }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: .75rem;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; color: var(--navy); }
+    .feature-card p { font-size: .9rem; color: var(--muted); line-height: 1.7; }
+
+    /* ===== スタッフ ===== */
+    #staff { background: var(--white); }
+
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .staff-card {
+      background: var(--gray);
+      border-radius: 1.2rem;
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid var(--gray2);
+      transition: transform .2s;
+    }
+    .staff-card:hover { transform: translateY(-4px); }
+
+    .staff-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      margin: 0 auto 1.2rem;
+      box-shadow: 0 4px 16px rgba(10,31,68,.2);
+    }
+
+    .staff-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: .3rem; color: var(--navy); }
+    .staff-card .staff-role {
+      font-size: .82rem;
+      color: var(--blue);
+      font-weight: 700;
+      letter-spacing: .06em;
+      margin-bottom: .8rem;
+    }
+    .staff-card p { font-size: .9rem; color: var(--muted); }
+    .staff-cert {
+      display: inline-block;
+      margin-top: .8rem;
+      background: var(--navy);
+      color: var(--white);
+      padding: .2rem .7rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+
+    /* ===== 料金 ===== */
+    #price { background: var(--gray); }
+
+    /* ===== 料金グリッド ===== */
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* PC: 3等幅カラム */
+      gap: 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+      padding-top: 1.4rem; /* バッジがはみ出す分の上余白 */
+      align-items: stretch;  /* 全カード同じ高さに揃える */
+    }
+
+    /* カード共通 */
+    .price-card {
+      background: var(--white);
+      border-radius: 1.2rem;
+      padding: 2.2rem;
+      border: 2px solid var(--gray2);
+      position: relative;
+      display: flex;           /* 縦方向のFlexで高さを揃える */
+      flex-direction: column;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .price-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(10,31,68,.1);
+    }
+
+    /* おすすめカード：transform なし・背景色で差別化 */
+    .price-card.featured {
+      background: var(--navy);
+      border-color: var(--blue);
+      box-shadow: 0 8px 40px rgba(26,115,232,.3);
+      padding-top: 3.2rem; /* バッジ分だけ上パディングを追加 */
+    }
+    .price-card.featured:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(26,115,232,.4);
+    }
+    .price-card.featured .price-name           { color: rgba(255,255,255,.85); }
+    .price-card.featured .price-amount         { color: var(--white); }
+    .price-card.featured .price-desc           { color: rgba(255,255,255,.55); }
+    .price-card.featured .price-features li    { color: rgba(255,255,255,.9); }
+    .price-card.featured .price-features li::before { color: #38bdf8; }
+
+    /* おすすめバッジ */
+    .price-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, var(--blue), #38bdf8);
+      color: var(--white);
+      font-size: .8rem;
+      font-weight: 700;
+      padding: .35rem 1.2rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(26,115,232,.4);
+      letter-spacing: .06em;
+    }
+
+    .price-name { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: .8rem; }
+    .price-amount {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1;
+      margin-bottom: .3rem;
+    }
+    .price-amount span { font-size: 1rem; font-weight: 500; }
+    .price-desc { font-size: .85rem; color: var(--muted); margin-bottom: 1.5rem; }
+
+    /* リストが残りスペースを埋めてカード下端を揃える */
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      flex: 1;
+    }
+    .price-features li { font-size: .9rem; display: flex; align-items: flex-start; gap: .5rem; }
+    .price-features li::before { content: '✓'; color: var(--blue); font-weight: 700; flex-shrink: 0; }
+
+    /* スマホ: 1カラム縦並び */
+    @media (max-width: 768px) {
+      .price-grid {
+        grid-template-columns: 1fr;
+        padding-top: 1.4rem;
+      }
+    }
+
+    /* ===== お悩みセクション ===== */
+    #worries {
+      background: var(--gray);
+      text-align: center;
+    }
+
+    /* 悩みカードグリッド */
+    .worries-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 3rem;
+    }
+
+    .worry-card {
+      background: var(--white);
+      border-radius: 1rem;
+      padding: 1.6rem 1.4rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      text-align: left;
+      box-shadow: 0 2px 12px rgba(10,31,68,.07);
+      border-left: 4px solid var(--blue);
+    }
+
+    .worry-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .worry-text {
+      font-size: .95rem;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    /* 「→解決できます」矢印バナー */
+    .worries-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .worries-arrow::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 24px solid var(--blue);
+    }
+
+    @media (max-width: 768px) {
+      .worries-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== ビフォーアフター ===== */
+    #before-after {
+      background: var(--navy);
+      color: var(--white);
+    }
+    #before-after .section-title { color: var(--white); }
+    #before-after .section-sub   { color: rgba(255,255,255,.6); }
+
+    .ba-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+    }
+
+    .ba-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 1.4rem;
+      overflow: hidden;
+    }
+
+    .ba-header {
+      background: var(--blue);
+      padding: .8rem 1.4rem;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--white);
+    }
+
+    .ba-body { padding: 1.6rem; }
+
+    /* ビフォーアフター矢印 */
+    .ba-flow {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .ba-before, .ba-after {
+      border-radius: .75rem;
+      padding: .9rem 1.1rem;
+      font-size: .9rem;
+      line-height: 1.55;
+    }
+
+    .ba-before {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      color: rgba(255,255,255,.75);
+    }
+
+    .ba-before::before { content: 'BEFORE 😟'; display: block; font-size: .72rem; font-weight: 700; margin-bottom: .35rem; color: rgba(255,255,255,.45); letter-spacing: .05em; }
+
+    .ba-arrow-down {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #38bdf8;
+    }
+
+    .ba-after {
+      background: rgba(26,115,232,.25);
+      border: 1px solid rgba(26,115,232,.5);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .ba-after::before { content: 'AFTER ✨'; display: block; font-size: .72rem; font-weight: 700; margin-bottom: .35rem; color: #7dd3fc; letter-spacing: .05em; }
+
+    .ba-result {
+      background: rgba(56,189,248,.12);
+      border-radius: .6rem;
+      padding: .7rem 1rem;
+      font-size: .88rem;
+      color: #7dd3fc;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .ba-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== 他社比較 ===== */
+    #comparison {
+      background: var(--gray);
+    }
+
+    .comparison-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .comparison-table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: .92rem;
+    }
+
+    /* ヘッダー行 */
+    .comparison-table thead th {
+      padding: 1rem .8rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: .88rem;
+    }
+
+    .comparison-table thead th:first-child {
+      background: transparent;
+      text-align: left;
+      min-width: 180px;
+    }
+
+    /* 自社列ヘッダー */
+    .col-us {
+      background: var(--navy);
+      color: var(--white) !important;
+      border-radius: 1rem 1rem 0 0;
+    }
+
+    /* 他社列ヘッダー */
+    .col-other {
+      background: var(--gray2);
+      color: var(--text);
+    }
+
+    /* 本体セル */
+    .comparison-table tbody td {
+      padding: .9rem .8rem;
+      text-align: center;
+      border-bottom: 1px solid var(--gray2);
+      vertical-align: middle;
+    }
+
+    .comparison-table tbody td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      padding-left: 0;
+    }
+
+    /* 自社列の本体 */
+    .comparison-table tbody .td-us {
+      background: rgba(10,31,68,.04);
+      font-weight: 700;
+      color: var(--navy);
+      border-left: 2px solid var(--blue);
+      border-right: 2px solid var(--blue);
+    }
+
+    /* 最終行の角丸 */
+    .comparison-table tbody tr:last-child .td-us:first-of-type {
+      border-radius: 0 0 0 1rem;
+    }
+    .comparison-table tbody tr:last-child .td-us:last-of-type {
+      border-radius: 0 0 1rem 0;
+    }
+
+    /* ✓ / × マーク */
+    .mark-yes { color: #22c55e; font-size: 1.2rem; font-weight: 700; }
+    .mark-no  { color: #94a3b8; font-size: 1.2rem; }
+    .mark-partial { color: #f59e0b; font-size: .88rem; font-weight: 600; }
+
+    /* ===== 実績 ===== */
+    #results { background: var(--white); }
+
+    /* デスクトップ: 3列グリッド / モバイル: 横スクロール */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .result-card {
+      background: var(--white);
+      border-radius: 1.2rem;
+      border: 1px solid var(--gray2);
+      overflow: hidden;
+      transition: transform .25s, box-shadow .25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .result-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(10,31,68,.13);
+    }
+
+    /* 画像エリア: やや大きめに設定 */
+    .result-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      background: var(--gray);
+      flex-shrink: 0;
+    }
+
+    /* 画像がない場合のプレースホルダー */
+    .result-img-placeholder {
+      width: 100%;
+      height: 200px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      font-size: 2.6rem;
+    }
+
+    .result-body { padding: 1.2rem 1.4rem 1.6rem; display: flex; flex-direction: column; gap: .5rem; }
+
+    /* 実績タイプバッジ */
+    .result-tag {
+      display: inline-block;
+      padding: .18rem .7rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      width: fit-content;
+    }
+    .result-tag.type-case   { background: rgba(26,115,232,.12); color: var(--blue); }
+    .result-tag.type-before { background: rgba(16,185,129,.12); color: #059669; }
+    .result-tag.type-intro  { background: rgba(245,158,11,.12); color: #b45309; }
+
+    .result-title { font-size: 1rem; font-weight: 700; color: var(--navy); line-height: 1.4; }
+    .result-desc  { font-size: .88rem; color: var(--muted); line-height: 1.7; }
+
+    /* タブレット以下: 横スクロール */
+    @media (max-width: 900px) {
+      .results-grid {
+        display: flex;
+        overflow-x: auto;
+        gap: 1.2rem;
+        padding-bottom: .8rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .results-grid::-webkit-scrollbar { height: 4px; }
+      .results-grid::-webkit-scrollbar-thumb { background: var(--gray2); border-radius: 2px; }
+
+      .result-card {
+        min-width: 260px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+      }
+    }
+
+    /* ===== FAQ ===== */
+    #faq { background: var(--gray); }
+
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: .8rem; }
+
+    .faq-item {
+      background: var(--white);
+      border-radius: .9rem;
+      border: 1px solid var(--gray2);
+      overflow: hidden;
+    }
+
+    .faq-q {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 1.2rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: background .2s;
+    }
+    .faq-q:hover { background: var(--gray); }
+
+    .faq-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: transform .3s;
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .3s;
+      padding: 0 1.5rem;
+      font-size: .92rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .faq-item.open .faq-a { max-height: 200px; padding: 0 1.5rem 1.2rem; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+    /* ===== アクセス ===== */
+    #access { background: var(--white); }
+
+    .access-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .access-info { display: flex; flex-direction: column; gap: 1.4rem; }
+
+    .access-row { display: flex; gap: 1rem; align-items: flex-start; }
+    .access-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: .6rem;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .access-row dt { font-size: .8rem; color: var(--muted); font-weight: 600; margin-bottom: .1rem; }
+    .access-row dd { font-size: .98rem; font-weight: 700; color: var(--navy); }
+
+    .map-placeholder {
+      background: var(--gray);
+      border-radius: 1.2rem;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: .9rem;
+      border: 1px dashed var(--gray2);
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    /* ===== フッター ===== */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.6);
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      font-size: .85rem;
+    }
+    footer strong { color: var(--white); display: block; margin-bottom: .5rem; font-size: 1rem; }
+
+    /* ===== チャットボット ===== */
+    #chat-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 20px rgba(26,115,232,.45);
+      z-index: 999;
+      transition: transform .2s, box-shadow .2s;
+    }
+    #chat-btn:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(26,115,232,.55); }
+
+    #chat-window {
+      position: fixed;
+      bottom: 6.5rem;
+      right: 2rem;
+      width: 340px;
+      max-width: calc(100vw - 2rem);
+      background: var(--white);
+      border-radius: 1.2rem;
+      box-shadow: 0 8px 40px rgba(10,31,68,.2);
+      display: none;
+      flex-direction: column;
+      z-index: 998;
+      overflow: hidden;
+      border: 1px solid var(--gray2);
+    }
+    #chat-window.open { display: flex; }
+
+    .chat-header {
+      background: var(--navy);
+      color: var(--white);
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+    }
+    .chat-header-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .chat-header-text { font-size: .88rem; }
+    .chat-header-text strong { display: block; font-size: .95rem; }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+      max-height: 300px;
+      background: var(--gray);
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: .65rem 1rem;
+      border-radius: 1rem;
+      font-size: .88rem;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    .msg.bot {
+      background: var(--white);
+      border-radius: 0 1rem 1rem 1rem;
+      align-self: flex-start;
+      box-shadow: 0 2px 8px rgba(10,31,68,.07);
+      color: var(--text);
+    }
+    .msg.user {
+      background: var(--blue);
+      color: var(--white);
+      border-radius: 1rem 0 1rem 1rem;
+      align-self: flex-end;
+    }
+
+    .chat-input-area {
+      display: flex;
+      border-top: 1px solid var(--gray2);
+      background: var(--white);
+    }
+
+    #chat-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: .8rem 1rem;
+      font-size: .9rem;
+      font-family: inherit;
+      color: var(--text);
+      background: transparent;
+    }
+
+    #chat-send {
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      padding: .8rem 1.1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background .2s;
+    }
+    #chat-send:hover { background: #1558b0; }
+
+    /* ===== レスポンシブ ===== */
+    @media (max-width: 768px) {
+      /* モバイルではナビリンクとCTAボタンをすべて非表示（ヒーロー内にボタンあり） */
+      nav a { display: none; }
+      .hamburger { display: flex; }
+
+      .access-grid { grid-template-columns: 1fr; }
+
+      section { padding: 3.5rem 0; }
+
+      #hero { padding: 3rem 0 3rem; }
+      .hero-inner { flex-direction: column; text-align: center; gap: 2rem; }
+      .hero-text { order: 1; }
+      .hero-visual { order: 2; flex: none; width: 100%; }
+      /* スマホ：画像は幅に追従しつつ縦を抑える */
+      .hero-photo { max-width: 260px; height: 240px; margin: 0 auto; }
+      .hero-desc { margin: 0 auto 2rem; max-width: 100%; }
+      .hero-btns { align-items: center; }
+      .hero-scroll { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">遺伝子トレーニング研究所</a>
+      <nav>
+        <a href="#features">特徴</a>
+        <a href="#staff">スタッフ</a>
+        <a href="#price">料金</a>
+        <a href="#faq">FAQ</a>
+        <a href="#access">アクセス</a>
+        <a href="#access" class="nav-cta">無料体験予約</a>
+      </nav>
+      <button class="hamburger" aria-label="メニュー" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== ヒーロー ===== -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+
+        <!-- テキストエリア -->
+        <div class="hero-text">
+          <span class="hero-label">GENE TRAINING LAB</span>
+          <h1 class="hero-title">
+            あなたの遺伝子が、<br>
+            <span>最強のトレーニングを導く。</span>
+          </h1>
+          <!-- サブコピー：参考サイトに倣った短いインパクトライン -->
+          <p class="hero-sub">調べるだけで終わらせない。</p>
+          <p class="hero-desc">遺伝子検査をベースにした完全個別プログラムで、<br>最短距離で理想の身体へ導きます。</p>
+          <div class="hero-btns">
+            <a href="#access" class="btn-primary">無料体験を予約する</a>
+            <span class="hero-scroll">Scroll</span>
+          </div>
+        </div>
+
+        <!-- ヒーロー写真 -->
+        <div class="hero-visual">
+          <img src="images/dna-kit.jpg"
+               alt="遺伝子検査キットを手にする女性"
+               class="hero-photo">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== お悩みセクション ===== -->
+  <section id="worries">
+    <div class="container">
+      <h2 class="section-title fade-in">こんなお悩みありませんか？</h2>
+      <p class="section-sub fade-in">多くの方が「頑張っているのに結果が出ない」という壁にぶつかっています。</p>
+
+      <div class="worries-grid">
+        <div class="worry-card fade-in">
+          <span class="worry-icon">⏳</span>
+          <span class="worry-text">若い頃と同じ努力をしているのに、体型・体調がなかなか変わらなくなってきた</span>
+        </div>
+        <div class="worry-card fade-in">
+          <span class="worry-icon">😓</span>
+          <span class="worry-text">頑張って運動・食事制限をしているのに、思うように成果が出ない</span>
+        </div>
+        <div class="worry-card fade-in">
+          <span class="worry-icon">❓</span>
+          <span class="worry-text">自分の年齢・体質に合ったトレーニングや食事が、もうわからなくなってきた</span>
+        </div>
+      </div>
+
+      <!-- 矢印＋解決メッセージ -->
+      <div class="worries-arrow fade-in">
+        遺伝子トレーニングが、すべて解決します
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 特徴 ===== -->
+  <section id="features">
+    <div class="container">
+      <h2 class="section-title fade-in">遺伝子トレーニングでわかること</h2>
+      <p class="section-sub fade-in">体組成計＋遺伝子情報を組み合わせた、新しい個別指導メソッドです。</p>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🧬</div>
+          <h3>筋肉タイプ・質の分析</h3>
+          <p>遺伝子から速筋・遅筋の割合や筋肉の質を判定。あなたの体質に合った最適なトレーニング種目と負荷を設定します。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🔥</div>
+          <h3>代謝機能・肥満リスク評価</h3>
+          <p>脂肪の燃えやすさや肥満になりやすい遺伝的傾向を把握。食事と運動の最適な組み合わせを導き出します。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🦴</div>
+          <h3>けが予防・骨強度チェック</h3>
+          <p>筋肉の硬さや骨強度リスクを事前に把握し、安全なプログラムを設計。怪我をしにくい体づくりをサポートします。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🥗</div>
+          <h3>個別栄養管理プラン</h3>
+          <p>遺伝子情報をもとにした食事アドバイスで、体質に合った栄養管理を実現。ダイエットや体質改善を食事面から支援します。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">📱</div>
+          <h3>LINE・オンラインで手軽にサポート</h3>
+          <p>Zoom・LINEを活用したオンライン指導で、全国どこからでも受講可能。忙しい方もライフスタイルに合わせて継続できます。</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">👩‍🏫</div>
+          <h3>専門アドバイザーが必ず解説</h3>
+          <p>遺伝子情報は調べるだけでは成果が出ません。資格を持つアドバイザーが結果を丁寧に解説し、実践まで伴走します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== サービスフロー ===== -->
+  <section id="flow">
+    <div class="container">
+      <h2 class="section-title fade-in">サービスの流れ</h2>
+      <p class="section-sub fade-in">遺伝子検査から成果まで、3ステップでサポートします。</p>
+      <div class="flow-grid">
+
+        <div class="flow-card fade-in">
+          <img src="images/dna-kit.jpg" alt="遺伝子検査キット" class="flow-img">
+          <div class="flow-body">
+            <span class="flow-step">STEP 01</span>
+            <div class="flow-title">遺伝子検査キットで体質を分析</div>
+            <p class="flow-desc">ご自宅で唾液を採取するだけ。痛みなし・採血なしで先天的な体質を把握します。結果はアドバイザーが丁寧に解説します。</p>
+          </div>
+        </div>
+
+        <div class="flow-card fade-in">
+          <img src="images/counsering.png" alt="カウンセリング" class="flow-img">
+          <div class="flow-body">
+            <span class="flow-step">STEP 02</span>
+            <div class="flow-title">体質に合わせた食事プランを実践</div>
+            <p class="flow-desc">遺伝子データをもとに、あなたの代謝タイプに最適な食事法を提案。LINEで毎日サポートするので、無理なく続けられます。</p>
+          </div>
+        </div>
+
+        <div class="flow-card fade-in">
+          <img src="images/exercise.jpg" alt="オンライン運動指導" class="flow-img">
+          <div class="flow-body">
+            <span class="flow-step">STEP 03</span>
+            <div class="flow-title">オンラインで個別トレーニング</div>
+            <p class="flow-desc">筋肉タイプや怪我リスクに合わせたプログラムを、Zoomで指導。全国どこからでも、自宅で理想の身体を目指せます。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スタッフ ===== -->
+  <section id="staff">
+    <div class="container">
+      <h2 class="section-title fade-in">トレーナー紹介</h2>
+      <p class="section-sub fade-in">全国で活躍する遺伝子トレーニングアドバイザーが、あなたをサポートします。</p>
+      <div class="staff-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+        <div class="staff-card fade-in">
+          <img src="https://idenshi-training.com/wp-content/uploads/2023/05/sugiyama-e1684760480194-1024x1024.jpg"
+            alt="杉山 知寿子"
+            style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 1.2rem;display:block;box-shadow:0 4px 16px rgba(10,31,68,.2);"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="staff-avatar" style="display:none">👩</div>
+          <h3>杉山 知寿子</h3>
+          <div class="staff-role">代表 / ダイエットボディメイク</div>
+          <p>遺伝子×体組成で、あなただけの最適解を導きます。</p>
+          <span class="staff-cert">神奈川 / オンライン対応</span>
+        </div>
+        <div class="staff-card fade-in">
+          <img src="https://idenshi-training.com/wp-content/uploads/2023/05/藤原厚志-1024x1024.jpg"
+            alt="藤原 厚志"
+            style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 1.2rem;display:block;box-shadow:0 4px 16px rgba(10,31,68,.2);"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="staff-avatar" style="display:none">👨</div>
+          <h3>藤原 厚志</h3>
+          <div class="staff-role">ボディムーブメント</div>
+          <p>体の動きを根本から見直し、無理のない動作改善を実現します。</p>
+          <span class="staff-cert">神奈川 / オンライン対応</span>
+        </div>
+        <div class="staff-card fade-in">
+          <img src="https://idenshi-training.com/wp-content/uploads/2022/07/kato-e1658309799874-1024x1024.jpg"
+            alt="加藤 早莉"
+            style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 1.2rem;display:block;box-shadow:0 4px 16px rgba(10,31,68,.2);"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="staff-avatar" style="display:none">👩</div>
+          <h3>加藤 早莉</h3>
+          <div class="staff-role">姿勢改善・しなやかボディメイク</div>
+          <p>姿勢と体型の両方を整える、しなやかな美しさをサポートします。</p>
+          <span class="staff-cert">東京 / オンライン対応</span>
+        </div>
+        <div class="staff-card fade-in">
+          <img src="https://idenshi-training.com/wp-content/uploads/2023/05/堀江祥太朗-e1684842221538-1024x1024.jpg"
+            alt="堀江 祥太郎"
+            style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 1.2rem;display:block;box-shadow:0 4px 16px rgba(10,31,68,.2);"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="staff-avatar" style="display:none">👨</div>
+          <h3>堀江 祥太郎</h3>
+          <div class="staff-role">姿勢改善・不定愁訴改善</div>
+          <p>慢性的な不調を体質から見直し、根本的な改善へと導きます。</p>
+          <span class="staff-cert">東京（練馬区周辺）/ オンライン対応</span>
+        </div>
+        <div class="staff-card fade-in">
+          <img src="https://idenshi-training.com/wp-content/uploads/2023/05/大貫直樹-e1684842270476-1024x1024.jpg"
+            alt="大貫 直樹"
+            style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 1.2rem;display:block;box-shadow:0 4px 16px rgba(10,31,68,.2);"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="staff-avatar" style="display:none">👨</div>
+          <h3>大貫 直樹</h3>
+          <div class="staff-role">ダイエット・競技力向上</div>
+          <p>一般の方から競技者まで、目標に合わせた的確なプログラムを提供します。</p>
+          <span class="staff-cert">東京（練馬区）/ オンライン対応</span>
+        </div>
+        <div class="staff-card fade-in">
+          <img src="https://idenshi-training.com/wp-content/uploads/2024/11/米川裕司-e1732949242260.jpg"
+            alt="米川 裕司"
+            style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin:0 auto 1.2rem;display:block;box-shadow:0 4px 16px rgba(10,31,68,.2);"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="staff-avatar" style="display:none">👨</div>
+          <h3>米川 裕司</h3>
+          <div class="staff-role">パーソナルトレーニング・ボディメイク</div>
+          <p>ボディメイクの目標に向けて、継続できる習慣づくりを一緒に取り組みます。</p>
+          <span class="staff-cert">埼玉 / オンライン相談可</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ビフォーアフター ===== -->
+  <section id="before-after">
+    <div class="container">
+      <h2 class="section-title fade-in">お客様の変化</h2>
+      <p class="section-sub fade-in">遺伝子情報をもとに最適なプログラムを実践した結果です。</p>
+
+      <div class="ba-grid">
+
+        <!-- 事例1 -->
+        <div class="ba-card fade-in">
+          <div class="ba-header">CASE 01｜代謝・体重管理</div>
+          <div class="ba-body">
+            <div class="ba-flow">
+              <div class="ba-before">代謝が低い体質で、食事を減らしても体重が落ちず、何をやっても変わらないと諦めていた。</div>
+              <div class="ba-arrow-down">▼</div>
+              <div class="ba-after">遺伝子検査で「代謝が低めの体質」と判明。食事のタイミングと内容を調整し、無理なく継続できた。</div>
+            </div>
+            <div class="ba-result">体重 −8kg・体脂肪率 −6%</div>
+          </div>
+        </div>
+
+        <!-- 事例2 -->
+        <div class="ba-card fade-in">
+          <div class="ba-header">CASE 02｜食事・体質改善</div>
+          <div class="ba-body">
+            <div class="ba-flow">
+              <div class="ba-before">脂っこいものを食べると体調が崩れやすく、何が原因かわからず悩んでいた。</div>
+              <div class="ba-arrow-down">▼</div>
+              <div class="ba-after">遺伝子的に脂質の代謝が苦手な体質と判明。食事内容を変えるだけで体型と体調が改善。</div>
+            </div>
+            <div class="ba-result">体脂肪率 −9%・体調不良が解消</div>
+          </div>
+        </div>
+
+        <!-- 事例3 -->
+        <div class="ba-card fade-in">
+          <div class="ba-header">CASE 03｜運動頻度の最適化</div>
+          <div class="ba-body">
+            <div class="ba-flow">
+              <div class="ba-before">毎日ハードに運動しても体重が落ちず、むしろ疲労が蓄積してやる気を失っていた。</div>
+              <div class="ba-arrow-down">▼</div>
+              <div class="ba-after">遺伝子的に「少ない運動量で効果が出る体質」と判明。月2回のトレーニングに変更し効率アップ。</div>
+            </div>
+            <div class="ba-result">月2回で体重 −5kg・慢性疲労も改善</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 他社比較 ===== -->
+  <section id="comparison">
+    <div class="container">
+      <h2 class="section-title fade-in">他のサービスとの違い</h2>
+      <p class="section-sub fade-in">「調べるだけ」で終わらせない、当研究所ならではのアプローチです。</p>
+
+      <div class="comparison-wrap fade-in">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="col-us">遺伝子トレーニング<br>研究所</th>
+              <th class="col-other">一般<br>パーソナルジム</th>
+              <th class="col-other">遺伝子検査<br>キットのみ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>遺伝子検査の実施</td>
+              <td class="td-us"><span class="mark-yes">✓</span></td>
+              <td><span class="mark-no">×</span></td>
+              <td><span class="mark-yes">✓</span></td>
+            </tr>
+            <tr>
+              <td>専門家によるカウンセリング</td>
+              <td class="td-us"><span class="mark-yes">✓</span></td>
+              <td><span class="mark-partial">場合による</span></td>
+              <td><span class="mark-no">×</span></td>
+            </tr>
+            <tr>
+              <td>体質に合った個別プログラム</td>
+              <td class="td-us"><span class="mark-yes">✓</span></td>
+              <td><span class="mark-partial">一部対応</span></td>
+              <td><span class="mark-no">×</span></td>
+            </tr>
+            <tr>
+              <td>食事指導</td>
+              <td class="td-us"><span class="mark-yes">✓</span></td>
+              <td><span class="mark-partial">場合による</span></td>
+              <td><span class="mark-no">×</span></td>
+            </tr>
+            <tr>
+              <td>継続LINEサポート</td>
+              <td class="td-us"><span class="mark-yes">✓</span></td>
+              <td><span class="mark-no">×</span></td>
+              <td><span class="mark-no">×</span></td>
+            </tr>
+            <tr>
+              <td>成果まで一貫サポート</td>
+              <td class="td-us"><span class="mark-yes">✓</span></td>
+              <td><span class="mark-partial">ジム内のみ</span></td>
+              <td><span class="mark-no">×</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 料金 ===== -->
+  <section id="price">
+    <div class="container">
+      <h2 class="section-title fade-in">料金プラン</h2>
+      <p class="section-sub fade-in">あなたの目標とライフスタイルに合わせてお選びください。</p>
+      <div class="price-grid">
+
+        <!-- プラン1：ライトプラン -->
+        <div class="price-card fade-in">
+          <div class="price-name">体質分析サービス</div>
+          <div class="price-amount">¥58,500</div>
+          <div class="price-desc">体質チェック＋Zoom解説60分</div>
+          <ul class="price-features">
+            <li>遺伝子検査キット一式</li>
+            <li>体質チェック</li>
+            <li>アドバイザーによるZoom解説（60分）</li>
+          </ul>
+        </div>
+
+        <!-- プラン2：おすすめ（中央・強調） -->
+        <div class="price-card featured fade-in">
+          <div class="price-badge">⭐ いちばん人気</div>
+          <div class="price-name">あなたのトリセツ解説</div>
+          <div class="price-amount">¥69,300</div>
+          <div class="price-desc">解説＋サポート体験＋1年間LINE</div>
+          <ul class="price-features">
+            <li>体質チェック</li>
+            <li>Zoom解説（60分）</li>
+            <li>選べるサポート体験（食事・運動・アドバイス）</li>
+            <li>1年間LINEサポート付き</li>
+          </ul>
+        </div>
+
+        <!-- プラン3：フルサポート -->
+        <div class="price-card fade-in">
+          <div class="price-name">運動食事2ヶ月サポート</div>
+          <div class="price-amount">¥220,000</div>
+          <div class="price-desc">60日集中＋週1オンライントレーニング</div>
+          <ul class="price-features">
+            <li>事前カウンセリング（60分）</li>
+            <li>体質チェック＋遺伝子解説（60分）</li>
+            <li>60日間LINE食事指導</li>
+            <li>週1オンライントレーニング×8回</li>
+            <li>効果測定＋1年間LINEサポート</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 実績 ===== -->
+  <section id="results">
+    <div class="container">
+      <h2 class="section-title fade-in">実績・事例紹介</h2>
+      <p class="section-sub fade-in">多くのお客様の目標達成をサポートしてきた、実際の事例をご紹介します。</p>
+      <div class="results-grid fade-in">
+
+        <!-- 事例 1 -->
+        <div class="result-card">
+          <img class="result-img"
+            src="https://idenshi-training.com/wp-content/uploads/2025/04/スクリーンショット-2025-04-12-121853.png"
+            alt="秋田翔眞選手 Yahoo!ニュース掲載"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="result-img-placeholder" style="display:none;background:linear-gradient(135deg,#dbeafe,#bfdbfe)">📰</div>
+          <div class="result-body">
+            <span class="result-tag type-case">メディア掲載</span>
+            <div class="result-title">秋田翔眞選手がYahoo!ニュースに掲載</div>
+            <p class="result-desc">入学式から2日で公式戦デビュー！早稲田実業1年生の活躍がYahoo!ニュースで紹介されました。</p>
+          </div>
+        </div>
+
+        <!-- 事例 2 -->
+        <div class="result-card">
+          <img class="result-img"
+            src="https://idenshi-training.com/wp-content/uploads/2024/10/12845.jpg"
+            alt="ボディビル全日本選手権 寺井貴之選手優勝"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="result-img-placeholder" style="display:none;background:linear-gradient(135deg,#fef3c7,#fde68a)">🏆</div>
+          <div class="result-body">
+            <span class="result-tag type-before">競技実績</span>
+            <div class="result-title">ボディビル全日本選手権で優勝</div>
+            <p class="result-desc">ANNBBF主催全日本選手権にてボディビル50歳以上の部で寺井貴之選手が優勝を果たしました。</p>
+          </div>
+        </div>
+
+        <!-- 事例 3 -->
+        <div class="result-card">
+          <img class="result-img"
+            src="https://idenshi-training.com/wp-content/uploads/2024/09/line_oa_chat_240922_135221-1.jpg"
+            alt="北川俊一選手 JBBFボディビル優勝"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="result-img-placeholder" style="display:none;background:linear-gradient(135deg,#d1fae5,#a7f3d0)">🥇</div>
+          <div class="result-body">
+            <span class="result-tag type-before">競技実績</span>
+            <div class="result-title">JBBFボディビル大会で北川選手が優勝</div>
+            <p class="result-desc">JBBFボディビルディング大会クラス別55kg以上の部で優勝。遺伝子データに基づくトレーニングが結果に結びつきました。</p>
+          </div>
+        </div>
+
+        <!-- 事例 4 -->
+        <div class="result-card">
+          <img class="result-img"
+            src="https://idenshi-training.com/wp-content/uploads/2023/12/吉岡選手２-1024x438-1.jpg"
+            alt="ANNBBF吉岡選手 世界選手権出場"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="result-img-placeholder" style="display:none;background:linear-gradient(135deg,#ede9fe,#ddd6fe)">🌍</div>
+          <div class="result-body">
+            <span class="result-tag type-before">競技実績</span>
+            <div class="result-title">ANNBBF吉岡選手が世界選手権へ出場</div>
+            <p class="result-desc">全日本ナチュラルボディビルディング連盟の大会を勝ち抜き、世界の舞台へ。コーチとの二人三脚で夢を実現しました。</p>
+          </div>
+        </div>
+
+        <!-- 事例 5 -->
+        <div class="result-card">
+          <img class="result-img"
+            src="https://idenshi-training.com/wp-content/uploads/2023/05/60代女性遅筋筋硬度リスク.jpg"
+            alt="60代女性 遅筋・筋硬度リスク改善事例"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="result-img-placeholder" style="display:none;background:linear-gradient(135deg,#fce7f3,#fbcfe8)">💪</div>
+          <div class="result-body">
+            <span class="result-tag type-intro">指導事例</span>
+            <div class="result-title">60代女性・ケガしやすい体質を自重トレで改善</div>
+            <p class="result-desc">遅筋・筋硬度リスクの遺伝子特性を踏まえ、自重トレーニングと食事指導を組み合わせた安全なプログラムを実施しました。</p>
+          </div>
+        </div>
+
+        <!-- 事例 6 -->
+        <div class="result-card">
+          <img class="result-img"
+            src="https://idenshi-training.com/wp-content/uploads/2024/12/News23-1024x922.png"
+            alt="TBS News23 メディア掲載"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="result-img-placeholder" style="display:none;background:linear-gradient(135deg,#e0f2fe,#bae6fd)">📺</div>
+          <div class="result-body">
+            <span class="result-tag type-case">メディア掲載</span>
+            <div class="result-title">TBS「News23」で取り上げられました</div>
+            <p class="result-desc">遺伝子トレーニング研究所の取り組みが全国放送のTBS「News23」にて特集されました。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq">
+    <div class="container">
+      <h2 class="section-title fade-in">よくある質問</h2>
+      <p class="section-sub fade-in">ご不明な点はチャットボットでもお気軽にどうぞ。</p>
+      <div class="faq-list fade-in">
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>検査だけ受けることはできますか？</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">検査キットのみの販売は行っておりません。遺伝子情報は専門アドバイザーによる解説があってはじめて成果につながるため、必ずセットでご受講いただいています。</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>検査はどこで・どのように行いますか？</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">ご自宅または販売店にて、唾液を採取する方法で実施します。採血は一切なく、痛みもありません。キットをお送りしますので、ご自宅で手軽にお試しいただけます。</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>カウンセリングはどのような方法で受けられますか？</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">基本的にZoomを使用したオンライン形式です。ご希望のツールがあればご相談ください。全国どこからでもご受講いただけます。</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>検査結果は将来変わることがありますか？</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">いいえ、変わりません。遺伝子検査は先天的な体質を分析するものですので、結果は生涯変わりません。一度検査を受ければ、長期にわたって活用できます。</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>担当トレーナーを途中で変えることはできますか？</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">可能です。目的の変更やトレーニングメニューの見直しに伴い、他のトレーナーへの依頼もできます。体質情報はトレーナー間で共有されますので、スムーズに引き継ぎが行われます。</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>申し込みはどうすればよいですか？</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">公式LINE、またはページ下部のお問い合わせフォームよりご連絡ください。担当者より詳細のご案内をさせていただきます。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== アクセス ===== -->
+  <section id="access">
+    <div class="container">
+      <h2 class="section-title fade-in">アクセス</h2>
+      <p class="section-sub fade-in">ご来店お待ちしております。</p>
+      <div class="access-grid fade-in">
+        <div class="access-info">
+          <div class="access-row">
+            <div class="access-icon">📍</div>
+            <dl>
+              <dt>住所</dt>
+              <dd>神奈川県藤沢市獺郷</dd>
+            </dl>
+          </div>
+          <div class="access-row">
+            <div class="access-icon">🚃</div>
+            <dl>
+              <dt>最寄り駅</dt>
+              <dd>寒川駅 徒歩約 10 分</dd>
+            </dl>
+          </div>
+          <div class="access-row">
+            <div class="access-icon">🕙</div>
+            <dl>
+              <dt>営業時間</dt>
+              <dd>10:00〜20:00（年中無休）</dd>
+            </dl>
+          </div>
+          <div class="access-row">
+            <div class="access-icon">📞</div>
+            <dl>
+              <dt>お問い合わせ</dt>
+              <dd>000-0000-0000</dd>
+            </dl>
+          </div>
+          <a href="#" class="btn-primary" style="display:inline-block;margin-top:.5rem;width:fit-content">無料体験を予約する</a>
+        </div>
+        <div class="map-placeholder">
+          <span style="font-size:2rem">🗺️</span>
+          <span>Googleマップ埋め込み予定</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== フッター ===== -->
+  <footer>
+    <strong>遺伝子トレーニング研究所</strong>
+    神奈川県藤沢市獺郷 ｜ 営業時間 10:00〜20:00<br>
+    &copy; 2026 遺伝子トレーニング研究所. All rights reserved.
+  </footer>
+
+  <!-- ===== チャットボット ===== -->
+  <button id="chat-btn" onclick="toggleChat()" aria-label="チャットを開く">💬</button>
+
+  <div id="chat-window">
+    <div class="chat-header">
+      <div class="chat-header-icon">🤖</div>
+      <div class="chat-header-text">
+        <strong>AIアシスタント</strong>
+        よくある質問にお答えします
+      </div>
+    </div>
+    <div id="chat-messages">
+      <div class="msg bot">こんにちは！遺伝子トレーニング研究所のAIアシスタントです。ご質問をどうぞ😊</div>
+    </div>
+    <div class="chat-input-area">
+      <input id="chat-input" type="text" placeholder="質問を入力してください…" onkeydown="if(event.key==='Enter')sendMsg()">
+      <button id="chat-send" onclick="sendMsg()">▶</button>
+    </div>
+  </div>
+
+  <script>
+    /* ===== FAQ アコーディオン ===== */
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    /* ===== チャットボット ===== */
+    const faqData = [
+      { keywords: ['検査', 'だけ', 'キット', '単体'], answer: '検査キットのみの販売は行っておりません。専門アドバイザーによる解説とセットでご受講いただいています。' },
+      { keywords: ['検査', '方法', 'どこ', '唾液', '採血', '痛い'], answer: 'ご自宅または販売店にて唾液を採取する方法です。採血は一切なく、痛みもありません。キットをお送りします。' },
+      { keywords: ['カウンセリング', 'zoom', 'オンライン', '対面', '方法'], answer: '基本はZoomを使ったオンライン形式です。ご希望のツールがあればご相談ください。全国どこからでも受講できます。' },
+      { keywords: ['結果', '変わる', '生涯', '先天', '有効'], answer: '遺伝子検査は先天的な体質を分析するため、結果は生涯変わりません。一度受ければ長期にわたって活用できます。' },
+      { keywords: ['トレーナー', '変更', '途中', '担当', '変え'], answer: '途中でトレーナーを変更することも可能です。体質情報はトレーナー間で共有されますのでスムーズに引き継ぎされます。' },
+      { keywords: ['申し込み', '予約', '登録', '始め', '問い合わせ'], answer: '公式LINEまたはページ下部のお問い合わせフォームからご連絡ください。担当者より詳細をご案内します。' },
+      { keywords: ['料金', '値段', '価格', '費用', 'いくら'], answer: '体質分析サービス ¥58,500〜、2ヶ月サポートプラン ¥220,000 など複数プランをご用意しています。詳しくは料金セクションをご覧ください。' },
+      { keywords: ['場所', '住所', 'アクセス', '最寄り', '駅'], answer: '神奈川県藤沢市獺郷にあります。最寄りは寒川駅（徒歩約10分）です。オンライン受講も可能です。' },
+      { keywords: ['営業', '時間', '何時', '開店', '閉店'], answer: '営業時間は 10:00〜20:00 です。まずはお問い合わせフォームまたは公式LINEよりご連絡ください。' },
+    ];
+
+    function toggleChat() {
+      const win = document.getElementById('chat-window');
+      win.classList.toggle('open');
+      if (win.classList.contains('open')) {
+        document.getElementById('chat-input').focus();
+      }
+    }
+
+    function sendMsg() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMsg(text, 'user');
+      input.value = '';
+
+      /* キーワードマッチで回答を検索 */
+      const lower = text;
+      const match = faqData.find(f => f.keywords.some(k => lower.includes(k)));
+      setTimeout(() => {
+        addMsg(match ? match.answer : 'ご質問ありがとうございます。詳しくはお電話（000-0000-0000）またはお問い合わせフォームよりご連絡ください。', 'bot');
+      }, 400);
+    }
+
+    function addMsg(text, type) {
+      const msgs = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'msg ' + type;
+      div.textContent = text;
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    /* ===== スクロールフェードイン ===== */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    /* ===== ハンバーガーメニュー（シンプル実装） ===== */
+    function toggleMenu() {
+      /* モバイルでは FAQ へスクロールで代替（実装例） */
+    }
+  </script>
+</body>
+</html>
