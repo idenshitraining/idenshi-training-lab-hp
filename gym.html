@@ -1052,6 +1052,39 @@
       align-self: flex-end;
     }
 
+    /* タイピングインジケーター */
+    .msg.typing {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: .65rem .9rem;
+      background: var(--white);
+      border-radius: 0 1rem 1rem 1rem;
+      align-self: flex-start;
+      box-shadow: 0 2px 8px rgba(10,31,68,.07);
+    }
+    .msg.typing span {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+      opacity: .4;
+      animation: typing-dot .9s infinite ease-in-out;
+    }
+    .msg.typing span:nth-child(2) { animation-delay: .18s; }
+    .msg.typing span:nth-child(3) { animation-delay: .36s; }
+    @keyframes typing-dot {
+      0%, 80%, 100% { transform: scale(1); opacity: .4; }
+      40% { transform: scale(1.25); opacity: 1; }
+    }
+
+    /* 送信中は入力エリアを薄く */
+    #chat-input:disabled, #chat-send:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
     .chat-input-area {
       display: flex;
       border-top: 1px solid var(--gray2);
@@ -1725,18 +1758,9 @@
       if (!isOpen) item.classList.add('open');
     }
 
-    /* ===== チャットボット ===== */
-    const faqData = [
-      { keywords: ['検査', 'だけ', 'キット', '単体'], answer: '検査キットのみの販売は行っておりません。専門アドバイザーによる解説とセットでご受講いただいています。' },
-      { keywords: ['検査', '方法', 'どこ', '唾液', '採血', '痛い'], answer: 'ご自宅または販売店にて唾液を採取する方法です。採血は一切なく、痛みもありません。キットをお送りします。' },
-      { keywords: ['カウンセリング', 'zoom', 'オンライン', '対面', '方法'], answer: '基本はZoomを使ったオンライン形式です。ご希望のツールがあればご相談ください。全国どこからでも受講できます。' },
-      { keywords: ['結果', '変わる', '生涯', '先天', '有効'], answer: '遺伝子検査は先天的な体質を分析するため、結果は生涯変わりません。一度受ければ長期にわたって活用できます。' },
-      { keywords: ['トレーナー', '変更', '途中', '担当', '変え'], answer: '途中でトレーナーを変更することも可能です。体質情報はトレーナー間で共有されますのでスムーズに引き継ぎされます。' },
-      { keywords: ['申し込み', '予約', '登録', '始め', '問い合わせ'], answer: '公式LINEまたはページ下部のお問い合わせフォームからご連絡ください。担当者より詳細をご案内します。' },
-      { keywords: ['料金', '値段', '価格', '費用', 'いくら'], answer: '体質分析サービス ¥58,500〜、2ヶ月サポートプラン ¥220,000 など複数プランをご用意しています。詳しくは料金セクションをご覧ください。' },
-      { keywords: ['場所', '住所', 'アクセス', '最寄り', '駅'], answer: '神奈川県藤沢市獺郷にあります。最寄りは寒川駅（徒歩約10分）です。オンライン受講も可能です。' },
-      { keywords: ['営業', '時間', '何時', '開店', '閉店'], answer: '営業時間は 10:00〜20:00 です。まずはお問い合わせフォームまたは公式LINEよりご連絡ください。' },
-    ];
+    /* ===== チャットボット（Claude API版） ===== */
+    // 会話履歴（マルチターン対応、最大20メッセージ保持）
+    const chatHistory = [];
 
     function toggleChat() {
       const win = document.getElementById('chat-window');
@@ -1746,25 +1770,75 @@
       }
     }
 
-    function sendMsg() {
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
+    async function sendMsg() {
+      const input  = document.getElementById('chat-input');
+      const sendBtn = document.getElementById('chat-send');
+      const text   = input.value.trim();
       if (!text) return;
 
+      // ユーザーメッセージを表示
       addMsg(text, 'user');
       input.value = '';
 
-      /* キーワードマッチで回答を検索 */
-      const lower = text;
-      const match = faqData.find(f => f.keywords.some(k => lower.includes(k)));
-      setTimeout(() => {
-        addMsg(match ? match.answer : 'ご質問ありがとうございます。詳しくはお電話（000-0000-0000）またはお問い合わせフォームよりご連絡ください。', 'bot');
-      }, 400);
+      // 入力を無効化（二重送信防止）
+      input.disabled  = true;
+      sendBtn.disabled = true;
+
+      // タイピングインジケーターを表示
+      const typingId = showTyping();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, history: chatHistory })
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        // 履歴に追加（次のターンで送信）
+        chatHistory.push({ role: 'user',      content: text });
+        chatHistory.push({ role: 'assistant', content: data.reply });
+        // 履歴は最大20件（10ターン）に制限
+        if (chatHistory.length > 20) chatHistory.splice(0, 2);
+
+        removeTyping(typingId);
+        addMsg(data.reply, 'bot');
+
+      } catch (e) {
+        removeTyping(typingId);
+        addMsg('申し訳ありません。一時的に接続できません。お電話またはフォームよりお問い合わせください。', 'bot');
+      }
+
+      // 入力を再有効化
+      input.disabled  = false;
+      sendBtn.disabled = false;
+      input.focus();
     }
 
+    // タイピングインジケーターを表示し ID を返す
+    function showTyping() {
+      const msgs = document.getElementById('chat-messages');
+      const div  = document.createElement('div');
+      div.className = 'msg bot typing';
+      div.id = 'typing-indicator';
+      div.innerHTML = '<span></span><span></span><span></span>';
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+      return div.id;
+    }
+
+    // タイピングインジケーターを削除
+    function removeTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    // チャットメッセージを追加
     function addMsg(text, type) {
       const msgs = document.getElementById('chat-messages');
-      const div = document.createElement('div');
+      const div  = document.createElement('div');
       div.className = 'msg ' + type;
       div.textContent = text;
       msgs.appendChild(div);
